@@ -64,3 +64,165 @@
 ---
 
 ## ⚙️ وصف العملية
+┌─────────────────┐ ┌──────────────────┐ ┌─────────────────┐
+│ Fetch Projects │────▶│ Filter by Keywords│────▶│ Check if New │
+│ (Mostaql) │ │ (20+ keywords) │ │ (last_proj.txt)│
+└─────────────────┘ └──────────────────┘ └────────┬────────┘
+│ New ✅
+▼
+┌─────────────────┐ ┌──────────────────┐ ┌─────────────────┐
+│ Send to Telegram│◀────│ Gemini Analysis │◀────│ Fetch Details │
+│ (Bot API) │ │ (Requirements + │ │ (Project Page) │
+│ │ │ Proposal Draft) │ │ │
+└─────────────────┘ └──────────────────┘ └─────────────────┘
+
+**القرارات الهندسية الأساسية:**
+- `time.sleep(3)` بين الطلبات لحماية الـ IP من الحجب
+- ملف نصي بدلاً من قاعدة بيانات لتتبع المشاريع — تبسيطاً للـ deployment
+- `break` بعد أول مشروع جديد لتجنب إرسال رسائل متعددة في نفس الجلسة
+
+---
+
+## 🚀 كيفية التشغيل
+
+### المتطلبات الأولية
+- Python 3.10+
+- حساب على [Google AI Studio](https://aistudio.google.com/apikey) للحصول على Gemini API Key
+- بوت تيليجرام (أنشئه عبر [@BotFather](https://t.me/BotFather))
+
+### خطوات التثبيت
+
+```bash
+# 1. استنسخ المشروع
+git clone https://github.com/your-username/mostaql-project-hunter.git
+cd mostaql-project-hunter
+
+# 2. أنشئ بيئة افتراضية
+python -m venv venv
+venv\Scripts\activate        # Windows
+# source venv/bin/activate   # Mac/Linux
+
+# 3. ثبّت المكتبات
+pip install requests beautifulsoup4 google-genai
+
+# 4. أضف بياناتك في main.py
+TELEGRAM_BOT_TOKEN = "your_token_here"
+TELEGRAM_CHAT_ID   = "your_chat_id_here"
+GEMINI_API_KEY     = "your_gemini_key_here"
+
+# 5. شغّل البوت
+python main.py
+```
+
+### جدولة التشغيل التلقائي (Windows Task Scheduler)
+
+```bash
+schtasks /create /tn "MostaqlBot" /tr "c:\path\to\venv\Scripts\python.exe c:\path\to\main.py" /sc minute /mo 10
+```
+
+### جدولة التشغيل التلقائي (Linux/Mac crontab)
+
+```bash
+*/10 * * * * /path/to/venv/bin/python /path/to/main.py
+```
+
+---
+
+## 🧩 التحديات والحلول
+
+### 1. تغيير هيكل HTML في موقع مستقل
+**المشكلة:** موقع مستقل يستخدم أحياناً class names مختلفة لنفس العنصر.
+
+**الحل:** استخدام fallback مزدوج في الاستخراج:
+```python
+tag = (
+    soup.find("div", id="project-brief-panel") or
+    soup.find("div", class_="text-wrapper-div")
+)
+```
+
+### 2. مكتبة Gemini deprecated
+**المشكلة:** `google.generativeai` توقف دعمها رسمياً في 2026.
+
+**الحل:** الانتقال للمكتبة الجديدة `google-genai`:
+```python
+# جديد ✅
+from google import genai
+client = genai.Client(api_key=GEMINI_API_KEY)
+client.models.generate_content(model="gemini-2.0-flash", contents=prompt)
+```
+
+---
+
+## 📊 النتائج والتأثير
+
+عند تشغيل البوت بنجاح، يصل إلى تيليجرام إشعار بهذا الشكل:
+🎯 مشروع جديد: محلل إحصائي
+
+🔗 الرابط: https://mostaql.com/projects/...
+
+🤖 تحليل وتوصية Gemini:
+المتطلبات الأساسية:
+
+تحليل بيانات إحصائية باستخدام Excel أو SPSS
+
+تقديم النتائج في تقرير واضح
+
+الخبرة في الإحصاء الوصفي والاستدلالي
+
+مسودة العرض:
+مرحباً، أنا محلل بيانات متخصص بخبرة 4+ سنوات...
+
+
+**المقاييس العملية:**
+- ⏱️ وقت الاستجابة: أقل من 30 ثانية من نشر المشروع
+- 📝 جودة العرض: مخصص لكل مشروع بناءً على وصفه الفعلي
+- 🎯 دقة الفلترة: 20+ كلمة مفتاحية عربية وإنجليزية
+
+---
+
+## ⚠️ القيود والتحسينات المستقبلية
+
+### القيود الحالية
+
+| القيد | التفاصيل |
+|---|---|
+| تتبع مشروع واحد فقط | الملف النصي يحفظ آخر مشروع فقط |
+| فلترة بالعنوان فقط | لا يفحص نص الوصف في مرحلة الفلترة |
+| جلسة واحدة لكل تشغيل | يعالج أول مشروع جديد فقط ثم يتوقف |
+
+### التحسينات المستقبلية
+
+- [ ] قاعدة بيانات SQLite لحفظ سجل كامل بالمشاريع المُرسلة
+- [ ] فلترة ذكية بالـ Gemini لتقييم جودة المشروع قبل الإرسال
+- [ ] دعم منصات متعددة (Khamsat, Fiverr, Upwork)
+- [ ] لوحة تحكم بسيطة لعرض إحصائيات المشاريع المرصودة
+- [ ] تصنيف المشاريع حسب الميزانية والأولوية
+
+---
+
+## 👥 الاستخدام المقصود
+
+هذا البوت مصمم لـ:
+- **المستقلين في تحليل البيانات** الذين يريدون التقدم لمشاريع مستقل بسرعة وكفاءة
+- **المطورين** الذين يريدون تعلم بناء أدوات أتمتة تجمع Web Scraping بالذكاء الاصطناعي
+- **أي شخص** يريد بناء نظام مراقبة مخصص لأي موقع آخر
+
+---
+
+## 📜 الحقوق والترخيص
+
+**المطور:** Omar Badr — [omarbadrdata.foo](https://www.omarbadrdata.foo)
+
+**المكتبات المستخدمة:**
+- [Requests](https://docs.python-requests.org/) — Apache 2.0
+- [BeautifulSoup4](https://www.crummy.com/software/BeautifulSoup/) — MIT
+- [Google GenAI SDK](https://github.com/googleapis/python-genai) — Apache 2.0
+
+> ⚠️ يُرجى الالتزام بـ [شروط استخدام منصة مستقل](https://mostaql.com/terms) عند تشغيل البوت.
+
+**الترخيص:** [MIT License](https://opensource.org/licenses/MIT) — حر الاستخدام مع ذكر المصدر.
+
+---
+
+> 💬 **هل واجهت مشكلة؟** افتح [Issue](https://github.com/your-username/mostaql-project-hunter/issues) أو تواصل مباشرة عبر الموقع.
