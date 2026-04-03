@@ -23,3 +23,6 @@ __pycache__/
 .vbs/
 
 .txt/
+bat/
+vbs/
+run_bot.bat
