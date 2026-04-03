@@ -26,3 +26,7 @@ __pycache__/
 bat/
 vbs/
 run_bot.bat
+silent_run.bat
+run_bot.vbs
+silent_run.vbs
+silent_run.vbs
