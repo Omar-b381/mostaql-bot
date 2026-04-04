@@ -18,7 +18,7 @@ GEMINI_API_KEY     = os.getenv("GEMINI_API_KEY")
 KEYWORDS = [
     "تحليل بيانات", "محلل بيانات", "احصاء", "إحصاء", "إحصائي",
     "Data Analysis", "Data Analyst", "Data Science", "Excel", "إكسيل",
-    "Power BI", "Tableau", "Python", "SQL", "Dashboard", "داشبورد","تقرير", "Report", "Visualization", "تصور بيانات","cv", "سيرة ذاتية","محلل بيانات مبتدئ", "Junior Data Analyst","محلل"
+    "Power BI", "Tableau", "Python", "SQL", "Dashboard", "داشبورد","تقرير", "Report", "Visualization", "تصور بيانات","cv", "سيرة ذاتية","محلل بيانات مبتدئ", "Junior Data Analyst","محلل","إكسل"
 ]
 
 HEADERS = {
