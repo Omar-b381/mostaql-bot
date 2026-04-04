@@ -1,3 +1,3 @@
 Set WshShell = CreateObject("WScript.Shell")
-WshShell.Run chr(34) & "C:\Users\omar\mostaql bot\run_bot.bat" & Chr(34), 0
+WshShell.Run "C:\Users\omar\mostaql_bot\run_bot.bat", 0, True
 Set WshShell = Nothing
