@@ -56,5 +56,7 @@ dist/
 *.bat
 *.vbs
 .vbs/
-bot_log.txt
+*.txt
+
+# =========================
 
